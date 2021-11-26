@@ -1,15 +1,20 @@
 package com.veercreation.weatherex;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import org.json.JSONObject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -82,12 +87,21 @@ public class MainActivity extends AppCompatActivity {
     public void getData(View view){
         DownloadingWeather weatherTask = new DownloadingWeather();
         String city = String.valueOf(cityInput.getText());
+        try {
+            city = URLEncoder.encode(city , "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            //TODO
+            e.printStackTrace();
+        }
         String url = "https://api.weatherapi.com/v1/current.json?key=9c0f3203757049a1bdf61654212411&q="+city;
         String result = null;
         try {
             result = weatherTask.execute(url).get();
+            InputMethodManager imr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imr.hideSoftInputFromWindow(cityInput.getWindowToken(),0);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }
